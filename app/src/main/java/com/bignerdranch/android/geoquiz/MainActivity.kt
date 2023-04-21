@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.lifecycle.ViewModel
 import com.bignerdranch.android.geoquiz.databinding.ActivityMainBinding
 
 private const val TAG = "MainActivity1"
@@ -16,16 +15,7 @@ class MainActivity : AppCompatActivity() {
 
     private val quizViewModel: QuizViewModel by viewModels()
 
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true)
-    )
 
-    private var currentIndex = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,12 +34,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.nextButton.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
-            updateQuestion()
-        }
-
-        binding.questionTextView.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
+            quizViewModel.moveToNext()
             updateQuestion()
         }
 
@@ -82,12 +67,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateQuestion() {
-        val questionTextResourceId = questionBank[currentIndex].textResId
+        val questionTextResourceId = quizViewModel.currentQuestionText
         binding.questionTextView.setText(questionTextResourceId)
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
-        val correctAnswer = questionBank[currentIndex].answer
+        val correctAnswer = quizViewModel.currentQuestionAnswer
 
         val messageResourceId = if (userAnswer == correctAnswer) {
             R.string.correct_toast
